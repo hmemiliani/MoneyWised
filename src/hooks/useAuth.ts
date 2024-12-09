@@ -12,17 +12,38 @@ export const useAuth = () => {
       setIsAuthenticated(!!token);
       setLoading(false);
     };
+
     checkAuth();
+
+    const interval = setInterval(() => {
+      checkAuth();
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { token } = await loginService(email, password);
-    await AsyncStorage.setItem('token', token);
-    setIsAuthenticated(true);
+    setLoading(true);
+    try {
+      const { accessToken } = await loginService(email, password);
+      await AsyncStorage.setItem('token', accessToken);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Error in login:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const register = async (data: { name: string; email: string; password: string; phone?: string }) => {
-    await registerService(data);
+  const register = async (data: { name: string; email: string; password: string; phone?: string; file?: any }) => {
+    setLoading(true);
+    try {
+      await registerService(data);
+    } catch (error) {
+      console.error('Error in registration:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const forgotPassword = async (email: string) => {

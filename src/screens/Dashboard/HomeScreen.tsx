@@ -37,37 +37,37 @@ const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Resumen de tus finanzas</Text>
+      <Text style={styles.title}>Summary of your finances</Text>
 
-      <Text style={styles.sectionTitle}>Gráficas</Text>
+      <Text style={styles.sectionTitle}>Charts</Text>
       <PieChart
-        style={styles.chart}
-        data={graphics.map((item: any) => ({
-          value: item.value,
-          svg: { fill: item.color },
-          key: item.key,
-        }))}
+      style={styles.chart}
+      data={graphics.map((item: any) => ({
+        value: item.value,
+        svg: { fill: item.color },
+        key: item.key,
+      }))}
       />
 
-      <Text style={styles.sectionTitle}>Presupuestos</Text>
+      <Text style={styles.sectionTitle}>Budgets</Text>
       <FlatList
-        data={budgets}
-        keyExtractor={(item) => item.id}
-        renderItem={renderBudgetItem}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.budgetList}
+      data={budgets}
+      keyExtractor={(item) => item.id}
+      renderItem={renderBudgetItem}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.budgetList}
       />
 
-      <Text style={styles.sectionTitle}>Transacciones recientes</Text>
+      <Text style={styles.sectionTitle}>Recent Transactions</Text>
       <FlatList
-        data={transactions}
-        keyExtractor={(item) => item.id}
-        renderItem={renderTransactionItem}
-        showsVerticalScrollIndicator={false}
+      data={transactions}
+      keyExtractor={(item) => item.id}
+      renderItem={renderTransactionItem}
+      showsVerticalScrollIndicator={false}
       />
 
-      <Button title="Cerrar sesión" onPress={logout} />
+      <Button title="Log out" onPress={logout} />
     </View>
   );
 };

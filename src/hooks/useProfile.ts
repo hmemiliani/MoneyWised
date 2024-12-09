@@ -9,6 +9,8 @@ export const useProfile = (userId: string) => {
     try {
       setLoading(true);
       const response = await api.get(`/users/${userId}`);
+      console.log('response:', response);
+      
       setProfile(response.data);
     } catch (error) {
       console.error('Error fetching profile:', error);
