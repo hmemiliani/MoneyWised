@@ -11,21 +11,21 @@ const ForgotPasswordScreen: React.FC = () => {
   const { forgotPassword } = useAuth();
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Email inválido').required('Email requerido'),
+    email: Yup.string().email('Invalid email').required('Email is required'),
   });
 
   const handleForgotPassword = async (values: { email: string }) => {
     try {
       await forgotPassword(values.email);
-      Alert.alert('Recuperación', 'Revisa tu correo para restablecer tu contraseña');
+      Alert.alert('Recovery', 'Check your email to reset your password');
     } catch (error) {
-      Alert.alert('Error', 'No se pudo completar la solicitud');
+      Alert.alert('Error', 'The request could not be completed');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Recupera tu contraseña</Text>
+      <Text style={styles.title}>Recover your password</Text>
       <Formik
         initialValues={{ email: '' }}
         validationSchema={validationSchema}
@@ -34,13 +34,13 @@ const ForgotPasswordScreen: React.FC = () => {
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <>
             <Input
-              placeholder="Correo electrónico"
+              placeholder="Email"
               onChangeText={handleChange('email')}
               onBlur={handleBlur('email')}
               value={values.email}
               error={touched.email ? errors.email : undefined}
             />
-            <Button title="Enviar" onPress={handleSubmit} />
+            <Button title="Send" onPress={handleSubmit} />
           </>
         )}
       </Formik>

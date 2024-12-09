@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useHomeData = () => {
   const [loading, setLoading] = useState(true);
@@ -11,15 +12,18 @@ export const useHomeData = () => {
     try {
       setLoading(true);
 
-      // Fetch budgets
+      const token = await AsyncStorage.getItem('token');
+      console.log('Token recuperado:', token);
+      if (token) {
+        api.defaults.headers.Authorization = `Bearer ${token}`;
+      }
+
       const budgetsResponse = await api.get('/budgets');
       setBudgets(budgetsResponse.data);
 
-      // Fetch transactions
       const transactionsResponse = await api.get('/transactions');
       setTransactions(transactionsResponse.data);
 
-      // Fetch graphics
       const graphicsResponse = await api.get('/graphics/broadcast');
       setGraphics(graphicsResponse.data);
 

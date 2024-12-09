@@ -18,7 +18,7 @@ const BudgetScreen: React.FC = () => {
 
   const handleCreate = async () => {
     if (!formValues.name || !formValues.amount) {
-      Alert.alert('Error', 'Por favor completa todos los campos obligatorios.');
+      Alert.alert('Error', 'Please complete all required fields.');
       return;
     }
 
@@ -36,11 +36,11 @@ const BudgetScreen: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     Alert.alert(
-      'Eliminar Presupuesto',
-      '¿Estás seguro de que deseas eliminar este presupuesto?',
+      'Delete Budget',
+      'Are you sure you want to delete this budget?',
       [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Eliminar', style: 'destructive', onPress: async () => await deleteBudget(id) },
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: async () => await deleteBudget(id) },
       ]
     );
   };
@@ -55,14 +55,14 @@ const BudgetScreen: React.FC = () => {
         style={styles.deleteButton}
         onPress={() => handleDelete(item.id)}
       >
-        <Text style={styles.deleteText}>Eliminar</Text>
+        <Text style={styles.deleteText}>Delete</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Presupuestos</Text>
+      <Text style={styles.title}>Budgets</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#FF6F00" />
       ) : (
@@ -77,35 +77,35 @@ const BudgetScreen: React.FC = () => {
       {showForm && (
         <View style={styles.form}>
           <Input
-            placeholder="Nombre del presupuesto"
+            placeholder="Budget Name"
             value={formValues.name}
             onChangeText={(text) => setFormValues({ ...formValues, name: text })}
           />
           <Input
-            placeholder="Descripción"
+            placeholder="Description"
             value={formValues.description}
             onChangeText={(text) => setFormValues({ ...formValues, description: text })}
           />
           <Input
-            placeholder="Monto"
+            placeholder="Amount"
             value={formValues.amount}
             keyboardType="numeric"
             onChangeText={(text) => setFormValues({ ...formValues, amount: text })}
           />
           <Input
-            placeholder="Fecha de inicio (YYYY-MM-DD)"
+            placeholder="Start Date (YYYY-MM-DD)"
             value={formValues.startDate}
             onChangeText={(text) => setFormValues({ ...formValues, startDate: text })}
           />
           <Input
-            placeholder="Fecha de fin (YYYY-MM-DD)"
+            placeholder="End Date (YYYY-MM-DD)"
             value={formValues.endDate}
             onChangeText={(text) => setFormValues({ ...formValues, endDate: text })}
           />
-          <Button title="Guardar" onPress={handleCreate} />
+          <Button title="Save" onPress={handleCreate} />
         </View>
       )}
-      <Button title={showForm ? 'Cancelar' : 'Agregar Presupuesto'} onPress={() => setShowForm(!showForm)} />
+      <Button title={showForm ? 'Cancel' : 'Add Budget'} onPress={() => setShowForm(!showForm)} />
     </View>
   );
 };

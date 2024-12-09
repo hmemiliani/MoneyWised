@@ -8,7 +8,7 @@ import styles from '../../styles/ProfileScreenStyles';
 
 const ProfileScreen: React.FC = () => {
   const { logout } = useAuth();
-  const userId = '123'; // ID del usuario autenticado
+  const userId = '123';
   const { profile, loading, updateProfile } = useProfile(userId);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -23,9 +23,9 @@ const ProfileScreen: React.FC = () => {
     try {
       await updateProfile(formValues);
       setIsEditing(false);
-      Alert.alert('Perfil actualizado', 'Tu información se actualizó correctamente.');
+      Alert.alert('Profile updated', 'Your information was updated successfully.');
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar tu perfil.');
+      Alert.alert('Error', 'Could not update your profile.');
     }
   };
 
@@ -39,7 +39,7 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
+      <Text style={styles.title}>Profile</Text>
       <View style={styles.profileContainer}>
         <Image
           source={{
@@ -49,7 +49,7 @@ const ProfileScreen: React.FC = () => {
         />
         {isEditing && (
           <TouchableOpacity style={styles.uploadButton}>
-            <Text style={styles.uploadText}>Cambiar Foto</Text>
+            <Text style={styles.uploadText}>Change Photo</Text>
           </TouchableOpacity>
         )}
         {!isEditing ? (
@@ -61,17 +61,17 @@ const ProfileScreen: React.FC = () => {
         ) : (
           <View>
             <Input
-              placeholder="Nombre"
+              placeholder="Name"
               value={formValues.name}
               onChangeText={(text) => setFormValues({ ...formValues, name: text })}
             />
             <Input
-              placeholder="Correo"
+              placeholder="Email"
               value={formValues.email}
               onChangeText={(text) => setFormValues({ ...formValues, email: text })}
             />
             <Input
-              placeholder="Teléfono"
+              placeholder="Phone"
               value={formValues.phone}
               onChangeText={(text) => setFormValues({ ...formValues, phone: text })}
             />
@@ -80,12 +80,12 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       {isEditing ? (
-        <Button title="Guardar Cambios" onPress={handleSave} />
+        <Button title="Save Changes" onPress={handleSave} />
       ) : (
-        <Button title="Editar Perfil" onPress={() => setIsEditing(true)} />
+        <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
       )}
 
-      <Button title="Cerrar Sesión" onPress={logout} />
+      <Button title="Logout" onPress={logout} />
     </View>
   );
 };

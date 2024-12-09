@@ -6,14 +6,14 @@ import styles from '../../styles/EditUserScreenStyles';
 import api from '../../services/api';
 
 const EditUserScreen: React.FC = ({ route, navigation }: any) => {
-  const { userId } = route.params; // Recibe el ID del usuario como parámetro
+  const { userId } = route.params;
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     name: '',
     email: '',
     phone: '',
     profileImage: '',
-    file: null, // Para manejar la nueva foto
+    file: null,
   });
 
   const fetchUserDetails = async () => {
@@ -28,7 +28,7 @@ const EditUserScreen: React.FC = ({ route, navigation }: any) => {
         file: null,
       });
     } catch (error) {
-      Alert.alert('Error', 'No se pudo cargar la información del usuario.');
+      Alert.alert('Error', 'Failed to load user information.');
     } finally {
       setLoading(false);
     }
@@ -47,18 +47,17 @@ const EditUserScreen: React.FC = ({ route, navigation }: any) => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      Alert.alert('Éxito', 'La información se actualizó correctamente.');
+      Alert.alert('Success', 'Information updated successfully.');
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar la información.');
+      Alert.alert('Error', 'Failed to update information.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleUploadPhoto = () => {
-    Alert.alert('Funcionalidad pendiente', 'Aquí se abriría la galería o cámara para seleccionar una foto.');
-    // Aquí puedes implementar react-native-image-picker para subir imágenes.
+    Alert.alert('Pending functionality', 'Here the gallery or camera would open to select a photo.');
   };
 
   useEffect(() => {
@@ -75,7 +74,7 @@ const EditUserScreen: React.FC = ({ route, navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Editar Usuario</Text>
+      <Text style={styles.title}>Edit User</Text>
       <View style={styles.profileContainer}>
         <Image
           source={{
@@ -84,27 +83,27 @@ const EditUserScreen: React.FC = ({ route, navigation }: any) => {
           style={styles.profileImage}
         />
         <TouchableOpacity style={styles.uploadButton} onPress={handleUploadPhoto}>
-          <Text style={styles.uploadText}>Cambiar Foto</Text>
+          <Text style={styles.uploadText}>Change Photo</Text>
         </TouchableOpacity>
       </View>
 
       <Input
-        placeholder="Nombre"
+        placeholder="Name"
         value={formValues.name}
         onChangeText={(text) => setFormValues({ ...formValues, name: text })}
       />
       <Input
-        placeholder="Correo"
+        placeholder="Email"
         value={formValues.email}
         onChangeText={(text) => setFormValues({ ...formValues, email: text })}
       />
       <Input
-        placeholder="Teléfono"
+        placeholder="Phone"
         value={formValues.phone}
         onChangeText={(text) => setFormValues({ ...formValues, phone: text })}
       />
 
-      <Button title="Guardar Cambios" onPress={handleSave} />
+      <Button title="Save Changes" onPress={handleSave} />
     </View>
   );
 };
