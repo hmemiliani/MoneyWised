@@ -7,28 +7,35 @@ export default StyleSheet.create({
     backgroundColor: colors.gray.light,
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.primary,
+  budgetHeader: {
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    padding: 20,
     marginBottom: 20,
-    textAlign: 'center',
+    alignItems: 'center',
   },
-  sectionTitle: {
+  availableTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.gray.dark,
-    marginTop: 20,
-    marginBottom: 10,
+    color: colors.white,
+  },
+  availableAmount: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: colors.white,
+    marginTop: 10,
   },
   budgetList: {
-    paddingVertical: 10,
+    paddingBottom: 20,
   },
   budgetItem: {
     backgroundColor: colors.white,
     borderRadius: 8,
     padding: 15,
-    marginRight: 15,
+    marginBottom: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -41,38 +48,32 @@ export default StyleSheet.create({
   },
   budgetDetail: {
     fontSize: 14,
-    color: colors.gray.medium,
-    marginTop: 5,
+    color: colors.primary,
   },
-  transactionItem: {
-    backgroundColor: colors.white,
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  transactionDescription: {
+  budgetPercentage: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.gray.dark,
+    color: colors.secondary,
   },
-  transactionDetail: {
-    fontSize: 14,
-    color: colors.primary,
-    marginTop: 5,
+  floatingButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: colors.primary,
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
-  transactionDate: {
-    fontSize: 12,
-    color: colors.gray.medium,
-    marginTop: 2,
-  },
-  chart: {
-    height: 200,
-    width: 200,
-    alignSelf: 'center',
+  floatingButtonText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.white,
   },
   loadingContainer: {
     flex: 1,
@@ -80,3 +81,4 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
 });
+
