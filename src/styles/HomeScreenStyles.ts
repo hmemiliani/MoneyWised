@@ -7,55 +7,76 @@ export default StyleSheet.create({
     backgroundColor: colors.gray.light,
     padding: 20,
   },
-  budgetHeader: {
+  // Botón de Presupuesto Disponible (Earnings)
+  earningButton: {
     backgroundColor: colors.primary,
     borderRadius: 10,
     padding: 20,
     marginBottom: 20,
     alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  availableTitle: {
+  earningText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.white,
   },
-  availableAmount: {
+  earningAmount: {
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.white,
     marginTop: 10,
   },
-  budgetList: {
-    paddingBottom: 20,
+  addIcon: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: colors.secondary,
+    color: colors.white,
+    fontSize: 24,
+    width: 40,
+    height: 40,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  budgetItem: {
+  // Lista de Categorías
+  categoryItem: {
     backgroundColor: colors.white,
     borderRadius: 8,
     padding: 15,
-    marginBottom: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  budgetName: {
+  categoryName: {
     fontSize: 16,
     fontWeight: 'bold',
     color: colors.gray.dark,
   },
-  budgetDetail: {
-    fontSize: 14,
-    color: colors.primary,
-  },
-  budgetPercentage: {
+  emptyText: {
+    textAlign: 'center',
+    color: colors.gray.medium,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.secondary,
+    marginTop: 20,
   },
-  floatingButton: {
+  // Botón flotante para agregar Categorías y Budgets
+  addButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
@@ -70,15 +91,77 @@ export default StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  floatingButtonText: {
+  addButtonText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.white,
+  },
+  // Modal general
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalForm: {
+    width: '90%',
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.primary,
+    marginBottom: 20,
+  },
+  modalInput: {
+    width: '100%',
+    padding: 10,
+    backgroundColor: colors.gray.light,
+    borderRadius: 8,
+    marginBottom: 15,
+    fontSize: 16,
+    color: colors.gray.dark,
+    borderWidth: 1,
+    borderColor: colors.gray.medium,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  errorText: {
+    fontSize: 14,
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  button: {
+    backgroundColor: colors.primary,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-
