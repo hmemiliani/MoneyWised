@@ -6,7 +6,7 @@ interface InputProps {
   placeholder: string;
   value: string;
   onChangeText: (text: string) => void;
-  onBlur?: () => void;
+  onBlur?: (field: string) => void;
   secureTextEntry?: boolean;
   error?: string;
 }
@@ -26,7 +26,7 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        onBlur={onBlur}
+        onBlur={() => onBlur && onBlur(placeholder)}
         secureTextEntry={secureTextEntry}
         placeholderTextColor="#9E9E9E"
       />

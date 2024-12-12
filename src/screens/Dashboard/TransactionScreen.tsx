@@ -12,12 +12,12 @@ const TransactionScreen: React.FC = () => {
     description: '',
     amount: '',
     date: '',
-    budgetId: '', // Aquí se podría implementar un selector de presupuestos
+    budgetId: '',
   });
 
   const handleCreate = async () => {
     if (!formValues.description || !formValues.amount || !formValues.date || !formValues.budgetId) {
-      Alert.alert('Error', 'Por favor completa todos los campos.');
+      Alert.alert('Error', 'Please complete all fields.');
       return;
     }
 
@@ -34,11 +34,11 @@ const TransactionScreen: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     Alert.alert(
-      'Eliminar Transacción',
-      '¿Estás seguro de que deseas eliminar esta transacción?',
+      'Delete Transaction',
+      'Are you sure you want to delete this transaction?',
       [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Eliminar', style: 'destructive', onPress: async () => await deleteTransaction(id) },
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: async () => await deleteTransaction(id) },
       ]
     );
   };
@@ -52,14 +52,14 @@ const TransactionScreen: React.FC = () => {
         style={styles.deleteButton}
         onPress={() => handleDelete(item.id)}
       >
-        <Text style={styles.deleteText}>Eliminar</Text>
+        <Text style={styles.deleteText}>Delete</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Transacciones</Text>
+      <Text style={styles.title}>Transactions</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#FF6F00" />
       ) : (
@@ -74,30 +74,30 @@ const TransactionScreen: React.FC = () => {
       {showForm && (
         <View style={styles.form}>
           <Input
-            placeholder="Descripción"
+            placeholder="Description"
             value={formValues.description}
             onChangeText={(text) => setFormValues({ ...formValues, description: text })}
           />
           <Input
-            placeholder="Monto"
+            placeholder="Amount"
             value={formValues.amount}
             keyboardType="numeric"
             onChangeText={(text) => setFormValues({ ...formValues, amount: text })}
           />
           <Input
-            placeholder="Fecha (YYYY-MM-DD)"
+            placeholder="Date (YYYY-MM-DD)"
             value={formValues.date}
             onChangeText={(text) => setFormValues({ ...formValues, date: text })}
           />
           <Input
-            placeholder="ID del Presupuesto"
+            placeholder="Budget ID"
             value={formValues.budgetId}
             onChangeText={(text) => setFormValues({ ...formValues, budgetId: text })}
           />
-          <Button title="Guardar" onPress={handleCreate} />
+          <Button title="Save" onPress={handleCreate} />
         </View>
       )}
-      <Button title={showForm ? 'Cancelar' : 'Agregar Transacción'} onPress={() => setShowForm(!showForm)} />
+      <Button title={showForm ? 'Cancel' : 'Add Transaction'} onPress={() => setShowForm(!showForm)} />
     </View>
   );
 };

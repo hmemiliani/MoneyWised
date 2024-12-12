@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../../styles/HomeScreenStyles';
 import {useHomeData} from '../../hooks/useHomeData';
 import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
@@ -31,29 +30,11 @@ const HomeScreen: React.FC = () => {
     categories,
     createEarning,
     createCategoryAndBudget,
-    fetchEarnings,
   } = useHomeData();
   const navigation = useNavigation<NavigationProp>();
   const [earningModalVisible, setEarningModalVisible] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
-  const [selectedEarningId, setSelectedEarningId] = useState<string | null>(
-    null,
-  );
-
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        await getSelectedEarningId();
-        await fetchEarnings();
-      } catch (error) {
-        console.error('Error loading initial data:', error);
-      }
-    };
-
-    loadInitialData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const earningSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -72,51 +53,8 @@ const HomeScreen: React.FC = () => {
       .positive('Must be positive'),
     startDate: Yup.string().required('Start date is required'),
     endDate: Yup.string().required('End date is required'),
+    earningId: Yup.string().required('Earning is required'),
   });
-
-  const handleCreateEarning = async (values: {
-    name: string;
-    generalAmount: number;
-    startDate: string;
-    endDate: string;
-  }) => {
-    try {
-      const formattedEarning = {
-        name: values.name,
-        generalAmount: values.generalAmount,
-        startDate: values.startDate,
-        endDate: values.endDate,
-      };
-
-      console.log('formattedEarning:', formattedEarning);
-
-      const response = await createEarning(formattedEarning);
-
-      console.log('Earning created successfully:', response);
-
-      const newEarningId = response?.id || response?.data?.id;
-      if (newEarningId) {
-        await AsyncStorage.setItem('selectedEarningId', newEarningId);
-        console.log('Earning ID saved:', newEarningId);
-      } else {
-        console.error('No ID found in the response:', response);
-      }
-
-      await fetchEarnings();
-      setEarningModalVisible(false);
-    } catch (error) {
-      console.error('Error creating earning:', error);
-    }
-  };
-
-  const getSelectedEarningId = async () => {
-    try {
-      const id = await AsyncStorage.getItem('selectedEarningId');
-      setSelectedEarningId(id);
-    } catch (error) {
-      console.error('Error fetching selected earning ID:', error);
-    }
-  };
 
   if (loading) {
     return (
@@ -138,7 +76,7 @@ const HomeScreen: React.FC = () => {
             ? earnings.reduce(
                 (total, earning) => total + (earning.generalAmount || 0),
                 0,
-              ).toLocaleString()
+              )
             : 0}
         </Text>
         <Text style={styles.addIcon}>+</Text>
@@ -169,7 +107,6 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
 
-      {/* Modal for Adding Earning */}
       <Modal visible={earningModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <Formik
@@ -180,7 +117,20 @@ const HomeScreen: React.FC = () => {
               endDate: '',
             }}
             validationSchema={earningSchema}
-            onSubmit={handleCreateEarning}>
+            onSubmit={async (values, actions) => {
+              try {
+                setGeneralError(null);
+                const formattedValues = {
+                  ...values,
+                  generalAmount: Number(values.generalAmount),
+                };
+                await createEarning(formattedValues);
+                setEarningModalVisible(false);
+                actions.resetForm();
+              } catch {
+                setGeneralError('Failed to create earning');
+              }
+            }}>
             {({
               handleChange,
               handleBlur,
@@ -237,6 +187,9 @@ const HomeScreen: React.FC = () => {
                   <Text style={styles.errorText}>{errors.endDate}</Text>
                 )}
 
+                {generalError && (
+                  <Text style={styles.errorText}>{generalError}</Text>
+                )}
                 <Button
                   title="Add Earning"
                   onPress={() => handleSubmit()}
@@ -252,29 +205,29 @@ const HomeScreen: React.FC = () => {
         </View>
       </Modal>
 
-
       <Modal visible={categoryModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <Formik
             initialValues={{
               categoryName: '',
               budgetName: '',
-              amount: 0,
+              amount: '',
               startDate: '',
               endDate: '',
+              earningId: '',
             }}
             validationSchema={categoryBudgetSchema}
             onSubmit={async (values, actions) => {
               try {
-                const categoryData = {
+                const formattedValues = {
                   ...values,
-                  earningId: selectedEarningId || '',
+                  amount: Number(values.amount),
                 };
-                await createCategoryAndBudget(categoryData);
+                await createCategoryAndBudget(formattedValues);
                 setCategoryModalVisible(false);
                 actions.resetForm();
-              } catch (error) {
-                console.error('Error creating category:', error);
+              } catch {
+                setGeneralError('Failed to create category and budget');
               }
             }}>
             {({
@@ -344,6 +297,20 @@ const HomeScreen: React.FC = () => {
                   <Text style={styles.errorText}>{errors.endDate}</Text>
                 )}
 
+                <TextInput
+                  style={styles.modalInput}
+                  placeholder="Select Earning ID"
+                  onChangeText={handleChange('earningId')}
+                  onBlur={handleBlur('earningId')}
+                  value={values.earningId}
+                />
+                {touched.earningId && errors.earningId && (
+                  <Text style={styles.errorText}>{errors.earningId}</Text>
+                )}
+
+                {generalError && (
+                  <Text style={styles.errorText}>{generalError}</Text>
+                )}
                 <Button
                   title="Add Category & Budget"
                   onPress={() => handleSubmit()}

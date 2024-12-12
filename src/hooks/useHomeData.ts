@@ -57,6 +57,29 @@ export const useHomeData = () => {
     }
   };
 
+  const fetchEarnings = async () => {
+    try {
+      setLoading(true);
+
+      const earningsResponse = await api.get('/earnings');
+      const cleanedEarnings = Array.isArray(earningsResponse.data?.data)
+        ? earningsResponse.data.data.map((earning: { generalAmount: string }) => ({
+            ...earning,
+            generalAmount: parseFloat(
+              (earning.generalAmount || '').replace(/[^0-9.-]+/g, ''),
+            ),
+          }))
+        : [];
+
+      setEarnings(cleanedEarnings);
+    } catch (err) {
+      console.error('Error fetching earnings:', err);
+      setError('Failed to fetch earnings.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createEarning = async (earning: {
     name: string;
     startDate: string;
@@ -64,11 +87,28 @@ export const useHomeData = () => {
     generalAmount: number;
   }) => {
     try {
-      const response = await api.post('/earnings', earning);
+      const formattedEarning = {
+        ...earning,
+        generalAmount: Number(earning.generalAmount),
+      };
+
+      console.log('formattedEarning:', formattedEarning);
+
+      const response = await api.post('/earnings', formattedEarning);
       setEarnings(prev => [...prev, response.data]);
       return response.data;
-    } catch (err) {
-      console.error('Error creating earning:', err);
+    } catch (err: any) {
+      console.error('Error Response:', err.response?.data || err.message);
+
+      if (
+        err.response?.status === 500 &&
+        err.response?.data?.message?.includes('duplicate key value')
+      ) {
+        throw new Error(
+          'An earning with this name and date range already exists.',
+        );
+      }
+
       throw new Error('Failed to create earning');
     }
   };
@@ -115,6 +155,7 @@ export const useHomeData = () => {
     categories,
     budgets,
     error,
+    fetchEarnings,
     createEarning,
     createCategoryAndBudget,
   };

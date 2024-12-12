@@ -6,7 +6,6 @@ export type TabsParamList = {
   Budgets: undefined;
   Transactions: undefined;
   Profile: undefined;
-  EditUser: undefined;
 };
 
 export type StackParamList = {
@@ -14,5 +13,6 @@ export type StackParamList = {
   Login: undefined;
   Register: undefined;
   ForgotPassword: undefined;
+  EditUser: undefined;
   CategoryScreen: { categoryId: string };
 };

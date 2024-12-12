@@ -1,8 +1,27 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from './api';
 
 export const login = async (email: string, password: string) => {
-  const response = await api.post('/auth/login', { email, password });
-  return response.data;
+  const loginValues = {
+    email: email,
+    password: password,
+  };
+
+  try {
+    const response = await api.post('/auth/login', loginValues, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.data && response.data.accessToken) {
+      await AsyncStorage.setItem('token', response.data.accessToken);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const register = async (data: {
@@ -10,8 +29,28 @@ export const register = async (data: {
   email: string;
   password: string;
   phone?: string;
+  file?: any;
 }) => {
-  const response = await api.post('/auth/register', data);
+  const formData = new FormData();
+
+  formData.append('name', data.name);
+  formData.append('email', data.email);
+  formData.append('password', data.password);
+  formData.append('phone', data.phone);
+
+  if (data.file) {
+    formData.append('file', {
+      uri: data.file.uri,
+      type: data.file.type,
+      name: data.file.fileName,
+    });
+  }
+
+  const response = await api.post('/auth/register', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };
 

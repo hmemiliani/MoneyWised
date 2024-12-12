@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from '../hooks/useAuth';
 import LoginScreen from '../screens/Auth/LoginScreen';
@@ -11,9 +11,10 @@ import BudgetScreen from '../screens/Dashboard/BudgetScreen';
 import TransactionScreen from '../screens/Dashboard/TransactionScreen';
 import ProfileScreen from '../screens/Dashboard/ProfileScreen';
 import EditUserScreen from '../screens/Dashboard/EditUserScreen';
-import CategoryScreen from '../screens/Dashboard/CategoryScreen'; // Importa la nueva pantalla de categorías
+import CategoryScreen from '../screens/Dashboard/CategoryScreen';
 import { StackParamList, TabsParamList } from './types';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Tabs = createBottomTabNavigator<TabsParamList>();
@@ -68,42 +69,53 @@ const AppTabs: React.FC = () => {
 };
 
 const AppNavigator: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#FF6F00" />;
+  }
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="App"
-            component={AppTabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CategoryScreen"
-            component={CategoryScreen}
-            options={{ headerShown: true, title: 'Category Details' }}
-          />
-        </Stack.Navigator>
-      ) : (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ForgotPassword"
-            component={ForgotPasswordScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      )}
+      <Stack.Navigator>
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen
+              name="App"
+              component={AppTabs}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CategoryScreen"
+              component={CategoryScreen}
+              options={{ headerShown: true, title: 'Category Details' }}
+            />
+            <Stack.Screen
+              name="EditUser"
+              component={EditUserScreen}
+              options={{ headerShown: true, title: 'Edit User' }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ForgotPassword"
+              component={ForgotPasswordScreen}
+              options={{ headerShown: false }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

@@ -8,12 +8,11 @@ export const useCategoryData = (categoryId: string) => {
   const [budgets, setBudgets] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // Obtener datos de la categoría y sus presupuestos/transacciones
   const fetchCategoryData = async () => {
     try {
       setLoading(true);
 
-      const response = await api.get(`/api/categories`);
+      const response = await api.get(`/categories`);
       const selectedCategory = response.data.find((cat: any) => cat.id === categoryId);
 
       if (!selectedCategory) {
@@ -22,12 +21,9 @@ export const useCategoryData = (categoryId: string) => {
 
       setCategory(selectedCategory);
 
-      // Obtener presupuestos relacionados con la categoría
-      const budgetsResponse = await api.get(`/api/budgets`);
+      const budgetsResponse = await api.get(`/budgets`);
       const categoryBudgets = budgetsResponse.data.filter((budget: any) => budget.category.id === categoryId);
       setBudgets(categoryBudgets);
-
-      // Simulación de transacciones asociadas (debe implementarse correctamente en el backend)
       setTransactions(selectedCategory.transactions || []);
     } catch (err: any) {
       console.error('Error fetching category data:', err);
@@ -37,10 +33,9 @@ export const useCategoryData = (categoryId: string) => {
     }
   };
 
-  // Crear un nuevo presupuesto asociado a la categoría
   const createBudget = async (budgetData: any) => {
     try {
-      const response = await api.post('/api/budgets', budgetData);
+      const response = await api.post('/budgets', budgetData);
       setBudgets((prev) => [...prev, response.data]);
       return response.data;
     } catch (err) {
