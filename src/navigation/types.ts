@@ -1,6 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 
-
 export type TabsParamList = {
   Home: undefined;
   Budgets: undefined;
@@ -13,6 +12,8 @@ export type StackParamList = {
   Login: undefined;
   Register: undefined;
   ForgotPassword: undefined;
+  ValidateCode: { email: string };
+  ResetPassword: { email: string; token: string };
   EditUser: undefined;
-  CategoryScreen: { categoryId: string };
+  CategoryScreen: { categoryId: string; categoryName: string };
 };

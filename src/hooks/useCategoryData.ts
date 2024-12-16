@@ -1,52 +1,69 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/api';
 
+type Category = {
+  id: string;
+  name: string;
+  budgetId?: string;
+  budgetAmount?: number;
+};
+
+type Transaction = {
+  id: string;
+  amount: number;
+  description: string;
+};
+
 export const useCategoryData = (categoryId: string) => {
+  const [category, setCategory] = useState<Category | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState<any | null>(null);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [budgets, setBudgets] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategoryData = async () => {
+  const fetchCategoryDetails = async () => {
     try {
-      setLoading(true);
+      const categoryResponse = await api.get(`/categories/${categoryId}`);
+      setCategory(categoryResponse.data);
 
-      const response = await api.get(`/categories`);
-      const selectedCategory = response.data.find((cat: any) => cat.id === categoryId);
-
-      if (!selectedCategory) {
-        throw new Error('Category not found');
-      }
-
-      setCategory(selectedCategory);
-
-      const budgetsResponse = await api.get(`/budgets`);
-      const categoryBudgets = budgetsResponse.data.filter((budget: any) => budget.category.id === categoryId);
-      setBudgets(categoryBudgets);
-      setTransactions(selectedCategory.transactions || []);
-    } catch (err: any) {
-      console.error('Error fetching category data:', err);
-      setError(err.message || 'Failed to fetch category data');
+      const transactionsResponse = await api.get('/transactions');
+      setTransactions(transactionsResponse.data);
+    } catch (err) {
+      console.error('Error fetching category details:', err);
+      setError('Failed to load category details.');
     } finally {
       setLoading(false);
     }
   };
 
-  const createBudget = async (budgetData: any) => {
+  const createTransaction = async (
+    budgetId: string,
+    amount: number,
+    description: string,
+    type: 'income' | 'expense'
+  ) => {
     try {
-      const response = await api.post('/budgets', budgetData);
-      setBudgets((prev) => [...prev, response.data]);
-      return response.data;
+      const formattedAmount = type === 'expense' ? -Math.abs(amount) : Math.abs(amount);
+      const response = await api.post('/transactions', {
+        budgetId,
+        amount: formattedAmount,
+        description,
+      });
+      setTransactions((prev) => [...prev, response.data]);
     } catch (err) {
-      console.error('Error creating budget:', err);
-      throw new Error('Failed to create budget. Please try again.');
+      console.error('Error creating transaction:', err);
+      setError('Failed to create transaction.');
     }
   };
 
   useEffect(() => {
-    fetchCategoryData();
+    fetchCategoryDetails();
   }, [categoryId]);
 
-  return { loading, category, transactions, budgets, error, fetchCategoryData, createBudget };
+  return {
+    category,
+    transactions,
+    loading,
+    error,
+    createTransaction,
+  };
 };

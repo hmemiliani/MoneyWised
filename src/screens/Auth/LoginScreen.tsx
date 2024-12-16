@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, Alert, ActivityIndicator } from 'react-native';
-import { Formik } from 'formik';
+import React, {useState} from 'react';
+import {View, Text, Alert, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import styles from '../../styles/LoginScreenStyles';
-import { useAuth } from '../../hooks/useAuth';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StackParamList } from '../../navigation/types';
+import {useAuth} from '../../hooks/useAuth';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {StackParamList} from '../../navigation/types';
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<StackParamList, 'Login'>;
+type LoginScreenNavigationProp = NativeStackNavigationProp<
+  StackParamList,
+  'Login'
+>;
 
 interface Props {
   navigation: LoginScreenNavigationProp;
 }
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const { login, loading } = useAuth();
+const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const {login, loading} = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validationSchema = Yup.object().shape({
@@ -24,11 +27,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     password: Yup.string().required('Required'),
   });
 
-  const handleLogin = async (values: { email: string; password: string }) => {
+  const handleLogin = async (values: {email: string; password: string}) => {
     setIsSubmitting(true);
     try {
       await login(values.email, values.password);
-      navigation.replace('App', { screen: 'Home' });
+      navigation.replace('App', {screen: 'Home'});
     } catch (error) {
       Alert.alert('Error', 'Invalid credentials');
     } finally {
@@ -43,11 +46,17 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <Formik
-          initialValues={{ email: '', password: '' }}
+          initialValues={{email: '', password: ''}}
           validationSchema={validationSchema}
-          onSubmit={handleLogin}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          onSubmit={handleLogin}>
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
             <>
               <Input
                 placeholder="Email"
@@ -65,10 +74,16 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
                 error={touched.password ? errors.password : undefined}
               />
               <Button title="Log In" onPress={() => handleSubmit()} />
-              <Button
-                title="Register here"
-                onPress={() => navigation.navigate('Register')}
-              />
+              <TouchableOpacity
+                style={styles.linkButton}
+                onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.linkButtonText}>Don't have an account? Sign up!</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.linkButton}
+                onPress={() => navigation.navigate('ForgotPassword')}>
+                <Text style={styles.linkButtonText}>Did you forget your password? Recover it!</Text>
+              </TouchableOpacity>
             </>
           )}
         </Formik>

@@ -15,11 +15,9 @@ import * as Yup from 'yup';
 import styles from '../../styles/CategoryScreenStyles';
 import api from '../../services/api';
 import {RouteProp} from '@react-navigation/native';
-import {StackParamList} from '../../navigation/types';
-import {ScrollView} from 'react-native-gesture-handler';
+import { StackParamList } from '../../navigation/types';
 
 type CategoryScreenRouteProp = RouteProp<StackParamList, 'CategoryScreen'>;
-
 
 type Budget = {
   id: string;
@@ -33,7 +31,7 @@ interface CategoryScreenProps {
 }
 
 const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
-  const {categoryId, categoryName} = route.params;
+  const { categoryId, categoryName } = route.params;
   const [budget, setBudget] = useState<Budget | null>(null);
   const [transactions, setTransactions] = useState<
     {amount: string; budgetId: string; description: string}[]
@@ -57,7 +55,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
 
           const transactionsResponse = await api.get('/transactions');
           const filteredTransactions = transactionsResponse.data.filter(
-            (t: {budget: {id: string}}) => t.budget.id === filteredBudget.id,
+            (t: { budget: { id: string } }) => t.budget.id === filteredBudget.id,
           );
 
           setTransactions(filteredTransactions);
@@ -89,9 +87,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
 
       const transactionData = {
         amount:
-          values.type === 'Expense'
-            ? -Math.abs(Number(values.amount))
-            : Number(values.amount),
+          values.type === 'Expense' ? -Math.abs(Number(values.amount)) : Number(values.amount),
         budgetId: budget.id,
         description: values.description,
       };
@@ -177,30 +173,28 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
         </Text>
       </View>
 
-      <ScrollView>
-        <FlatList
-          data={transactions}
-          keyExtractor={(item, index) => `${item.description}-${index}`}
-          renderItem={({item}) => {
-            const transactionType = Number(item.amount) < 0 ? '-' : '+';
-            return (
-              <View
-                style={[
-                  styles.transactionItem,
-                  transactionType === '+' ? styles.expense : styles.income,
-                ]}>
-                <Text style={styles.transactionAmount}>{item.amount}</Text>
-                <Text style={styles.transactionDescription}>
-                  {item.description}
-                </Text>
-              </View>
-            );
-          }}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No transactions yet.</Text>
-          }
-        />
-      </ScrollView>
+      <FlatList
+        data={transactions}
+        keyExtractor={(item, index) => `${item.description}-${index}`}
+        renderItem={({item}) => (
+          <View
+            style={[
+              styles.transactionItem,
+              Number(item.amount) < 0 ? styles.expense : styles.income,
+            ]}>
+            <Text style={styles.transactionAmount}>
+              {Number(item.amount) < 0 ? '-' : '+'}$
+              {Math.abs(Number(item.amount)).toLocaleString()}
+            </Text>
+            <Text style={styles.transactionDescription}>
+              {item.description}
+            </Text>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No transactions yet.</Text>
+        }
+      />
 
       <TouchableOpacity
         style={styles.addButton}

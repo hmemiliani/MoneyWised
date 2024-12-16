@@ -7,17 +7,17 @@ import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
 import ForgotPasswordScreen from '../screens/Auth/ForgotPasswordScreen';
 import HomeScreen from '../screens/Dashboard/HomeScreen';
-import BudgetScreen from '../screens/Dashboard/BudgetScreen';
-import TransactionScreen from '../screens/Dashboard/TransactionScreen';
 import ProfileScreen from '../screens/Dashboard/ProfileScreen';
-import EditUserScreen from '../screens/Dashboard/EditUserScreen';
 import CategoryScreen from '../screens/Dashboard/CategoryScreen';
 import { StackParamList, TabsParamList } from './types';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ActivityIndicator } from 'react-native';
+import ValidateCodeScreen from '../screens/Auth/ValidateCodeScreen';
+import ResetPasswordScreen from '../screens/Auth/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 const Tabs = createBottomTabNavigator<TabsParamList>();
+
 
 const AppTabs: React.FC = () => {
   return (
@@ -28,12 +28,6 @@ const AppTabs: React.FC = () => {
           let iconName: string = '';
           if (route.name === 'Home') {
             iconName = 'home-outline';
-          }
-          if (route.name === 'Budgets') {
-            iconName = 'pie-chart-outline';
-          }
-          if (route.name === 'Transactions') {
-            iconName = 'list-outline';
           }
           if (route.name === 'Profile') {
             iconName = 'person-outline';
@@ -47,16 +41,6 @@ const AppTabs: React.FC = () => {
       <Tabs.Screen
         name="Home"
         component={HomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Tabs.Screen
-        name="Budgets"
-        component={BudgetScreen}
-        options={{ headerShown: false }}
-      />
-      <Tabs.Screen
-        name="Transactions"
-        component={TransactionScreen}
         options={{ headerShown: false }}
       />
       <Tabs.Screen
@@ -90,11 +74,6 @@ const AppNavigator: React.FC = () => {
               component={CategoryScreen}
               options={{ headerShown: true, title: 'Category Details' }}
             />
-            <Stack.Screen
-              name="EditUser"
-              component={EditUserScreen}
-              options={{ headerShown: true, title: 'Edit User' }}
-            />
           </>
         ) : (
           <>
@@ -111,6 +90,16 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
               name="ForgotPassword"
               component={ForgotPasswordScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ValidateCode"
+              component={ValidateCodeScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPasswordScreen}
               options={{ headerShown: false }}
             />
           </>

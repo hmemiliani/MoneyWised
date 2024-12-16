@@ -30,9 +30,12 @@ const HomeScreen: React.FC = () => {
     earnings,
     categories,
     createEarning,
+    fetchCategories,
     createCategoryAndBudget,
     fetchEarnings,
   } = useHomeData();
+
+
   const navigation = useNavigation<NavigationProp>();
   const [earningModalVisible, setEarningModalVisible] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
@@ -45,6 +48,7 @@ const HomeScreen: React.FC = () => {
       try {
         await getSelectedEarningId();
         await fetchEarnings();
+        await fetchCategories();
       } catch (error) {
         console.error('Error loading initial data:', error);
       }
@@ -66,7 +70,6 @@ const HomeScreen: React.FC = () => {
 
   const categoryBudgetSchema = Yup.object().shape({
     categoryName: Yup.string().required('Category name is required'),
-    budgetName: Yup.string().required('Budget name is required'),
     amount: Yup.number()
       .required('Amount is required')
       .positive('Must be positive'),
@@ -88,16 +91,11 @@ const HomeScreen: React.FC = () => {
         endDate: values.endDate,
       };
 
-      console.log('formattedEarning:', formattedEarning);
-
       const response = await createEarning(formattedEarning);
-
-      console.log('Earning created successfully:', response);
 
       const newEarningId = response?.id || response?.data?.id;
       if (newEarningId) {
         await AsyncStorage.setItem('selectedEarningId', newEarningId);
-        console.log('Earning ID saved:', newEarningId);
       } else {
         console.error('No ID found in the response:', response);
       }
@@ -112,6 +110,9 @@ const HomeScreen: React.FC = () => {
   const getSelectedEarningId = async () => {
     try {
       const id = await AsyncStorage.getItem('selectedEarningId');
+      if (!id) {
+        console.warn('No earning ID found.');
+      }
       setSelectedEarningId(id);
     } catch (error) {
       console.error('Error fetching selected earning ID:', error);
@@ -125,7 +126,6 @@ const HomeScreen: React.FC = () => {
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -134,11 +134,14 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.earningText}>Available Budget</Text>
         <Text style={styles.earningAmount}>
           $
-          {Array.isArray(earnings)
-            ? earnings.reduce(
-                (total, earning) => total + (earning.generalAmount || 0),
-                0,
-              ).toLocaleString()
+            {Array.isArray(earnings)
+            ? earnings
+              .reduce(
+                (total, earning) =>
+                total + (parseFloat((earning.generalAmount || '0').toString().replace(/[$,]/g, '')) - parseFloat((earning.amountBudgeted || '0').toString().replace(/[$,]/g, ''))),
+                0
+              )
+              .toLocaleString()
             : 0}
         </Text>
         <Text style={styles.addIcon}>+</Text>
@@ -146,15 +149,18 @@ const HomeScreen: React.FC = () => {
 
       <FlatList
         data={categories}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         renderItem={({item}) => (
-          <TouchableOpacity
+            <TouchableOpacity
             style={styles.categoryItem}
             onPress={() =>
-              navigation.navigate('CategoryScreen', {categoryId: item.id})
+              navigation.navigate('CategoryScreen', {
+              categoryId: item.id,
+              categoryName: item.name,
+              })
             }>
             <Text style={styles.categoryName}>{item.name}</Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
@@ -252,19 +258,23 @@ const HomeScreen: React.FC = () => {
         </View>
       </Modal>
 
-
       <Modal visible={categoryModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <Formik
             initialValues={{
               categoryName: '',
-              budgetName: '',
               amount: 0,
               startDate: '',
               endDate: '',
             }}
             validationSchema={categoryBudgetSchema}
             onSubmit={async (values, actions) => {
+              if (!selectedEarningId) {
+                console.error(
+                  'No earning ID found. Cannot create category and budget.',
+                );
+                return;
+              }
               try {
                 const categoryData = {
                   ...values,
@@ -297,17 +307,6 @@ const HomeScreen: React.FC = () => {
                 />
                 {touched.categoryName && errors.categoryName && (
                   <Text style={styles.errorText}>{errors.categoryName}</Text>
-                )}
-
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="Budget Name"
-                  onChangeText={handleChange('budgetName')}
-                  onBlur={handleBlur('budgetName')}
-                  value={values.budgetName}
-                />
-                {touched.budgetName && errors.budgetName && (
-                  <Text style={styles.errorText}>{errors.budgetName}</Text>
                 )}
 
                 <TextInput

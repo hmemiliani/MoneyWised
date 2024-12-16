@@ -24,7 +24,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      console.log('Error Response:', error.response);
+      console.error('Error Response:', error.response);
     }
     if (error.response?.status === 401) {
       AsyncStorage.removeItem('token');
