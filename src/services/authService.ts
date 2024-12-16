@@ -58,3 +58,23 @@ export const forgotPassword = async (email: string) => {
   const response = await api.post('/auth/forgot-password', { email });
   return response.data;
 };
+
+// Validate Recovery Code
+export const validateRecoveryCode = async (data: { email: string; token: string }) => {
+  const response = await api.post('/auth/validate-recovery-code', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
+};
+
+// Reset Password
+export const resetPassword = async (data: { email: string; token: string; newPassword: string }) => {
+  const response = await api.post('/auth/reset-password', data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
+};

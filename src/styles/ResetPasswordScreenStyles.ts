@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import colors from './colors';
 
-const ForgotPasswordScreenStyles = StyleSheet.create({
+const ResetPasswordScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -15,14 +15,17 @@ const ForgotPasswordScreenStyles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  linkButton: {
-    marginTop: 20,
-    alignSelf: 'center',
+  input: {
+    borderWidth: 1,
+    borderColor: colors.gray.medium,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+    backgroundColor: colors.white,
   },
-  linkButtonText: {
-    color: colors.info,
-    fontSize: 16,
+  button: {
+    marginTop: 20,
   },
 });
 
-export default ForgotPasswordScreenStyles;
+export default ResetPasswordScreenStyles;

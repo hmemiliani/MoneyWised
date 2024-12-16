@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { useProfile } from '../../hooks/useProfile';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/Button';
@@ -8,15 +16,14 @@ import styles from '../../styles/ProfileScreenStyles';
 
 const ProfileScreen: React.FC = () => {
   const { logout } = useAuth();
-  const userId = '123';
-  const { profile, loading, updateProfile } = useProfile(userId);
+  const { profile, loading, updateProfile } = useProfile();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    file: null,
+    name: profile?.name || '',
+    email: profile?.email || '',
+    phone: profile?.phone || '',
+    file: null as any,
   });
 
   const handleSave = async () => {
@@ -29,7 +36,29 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  if (loading) {
+  const handleCancel = () => {
+    setFormValues({
+      name: profile?.name || '',
+      email: profile?.email || '',
+      phone: profile?.phone || '',
+      file: null,
+    });
+    setIsEditing(false);
+  };
+
+  const handleImagePick = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      includeBase64: false,
+    });
+
+    if (result.assets && result.assets.length > 0) {
+      const image = result.assets[0];
+      setFormValues({ ...formValues, file: image });
+    }
+  };
+
+  if (loading || !profile) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FF6F00" />
@@ -43,12 +72,12 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.profileContainer}>
         <Image
           source={{
-            uri: profile?.profileImage || 'https://via.placeholder.com/100',
+            uri: formValues.file?.uri || profile?.profileImage || 'https://via.placeholder.com/100',
           }}
           style={styles.profileImage}
         />
         {isEditing && (
-          <TouchableOpacity style={styles.uploadButton}>
+          <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
             <Text style={styles.uploadText}>Change Photo</Text>
           </TouchableOpacity>
         )}
@@ -80,7 +109,10 @@ const ProfileScreen: React.FC = () => {
       </View>
 
       {isEditing ? (
-        <Button title="Save Changes" onPress={handleSave} />
+        <>
+          <Button title="Save Changes" onPress={handleSave} />
+          <Button title="Cancel" onPress={handleCancel} />
+        </>
       ) : (
         <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
       )}
