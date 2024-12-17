@@ -284,12 +284,12 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
                 </View>
                 <View style={styles.modalButtonsContainer}>
                   <View style={styles.modalButtons}>
-                  <TouchableOpacity onPress={() => handleSubmit()} style={styles.modalButton}>
+                  <TouchableOpacity onPress={() => handleSubmit()}>
                     <Text style={styles.modalButtonText}>Add</Text>
                   </TouchableOpacity>
                   </View>
                   <View style={styles.modalButtons}>
-                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
                     <Text style={styles.modalButtonText}>Cancel</Text>
                   </TouchableOpacity>
                   </View>
