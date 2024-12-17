@@ -18,6 +18,7 @@ import {CompositeNavigationProp, useNavigation} from '@react-navigation/native';
 import {StackParamList, TabsParamList} from '../../navigation/types';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {RefreshControl} from 'react-native-gesture-handler';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<TabsParamList, 'Home'>,
@@ -35,13 +36,25 @@ const HomeScreen: React.FC = () => {
     fetchEarnings,
   } = useHomeData();
 
-
   const navigation = useNavigation<NavigationProp>();
   const [earningModalVisible, setEarningModalVisible] = useState(false);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [selectedEarningId, setSelectedEarningId] = useState<string | null>(
     null,
   );
+  const [refreshing, setRefreshing] = useState(false);
+
+  const getDateRange = () => {
+    const today = new Date();
+    const startDate = today.toISOString().split('T')[0];
+
+    today.setDate(today.getDate() + 30);
+    const endDate = today.toISOString().split('T')[0];
+
+    return {startDate, endDate};
+  };
+
+  const {startDate, endDate} = getDateRange();
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -55,17 +68,26 @@ const HomeScreen: React.FC = () => {
     };
 
     loadInitialData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchEarnings();
+      await fetchCategories();
+    } catch (error) {
+      console.error('Error during refresh:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const earningSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     generalAmount: Yup.number()
       .required('Amount is required')
       .positive('Must be positive'),
-    startDate: Yup.string().required('Start date is required'),
-    endDate: Yup.string().required('End date is required'),
   });
 
   const categoryBudgetSchema = Yup.object().shape({
@@ -73,8 +95,6 @@ const HomeScreen: React.FC = () => {
     amount: Yup.number()
       .required('Amount is required')
       .positive('Must be positive'),
-    startDate: Yup.string().required('Start date is required'),
-    endDate: Yup.string().required('End date is required'),
   });
 
   const handleCreateEarning = async (values: {
@@ -87,8 +107,8 @@ const HomeScreen: React.FC = () => {
       const formattedEarning = {
         name: values.name,
         generalAmount: values.generalAmount,
-        startDate: values.startDate,
-        endDate: values.endDate,
+        startDate: startDate,
+        endDate: endDate,
       };
 
       const response = await createEarning(formattedEarning);
@@ -134,14 +154,24 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.earningText}>Available Budget</Text>
         <Text style={styles.earningAmount}>
           $
-            {Array.isArray(earnings)
+          {Array.isArray(earnings)
             ? earnings
-              .reduce(
-                (total, earning) =>
-                total + (parseFloat((earning.generalAmount || '0').toString().replace(/[$,]/g, '')) - parseFloat((earning.amountBudgeted || '0').toString().replace(/[$,]/g, ''))),
-                0
-              )
-              .toLocaleString()
+                .reduce(
+                  (total, earning) =>
+                    total +
+                    (parseFloat(
+                      (earning.generalAmount || '0')
+                        .toString()
+                        .replace(/[$,]/g, ''),
+                    ) -
+                      parseFloat(
+                        (earning.amountBudgeted || '0')
+                          .toString()
+                          .replace(/[$,]/g, ''),
+                      )),
+                  0,
+                )
+                .toLocaleString()
             : 0}
         </Text>
         <Text style={styles.addIcon}>+</Text>
@@ -149,23 +179,26 @@ const HomeScreen: React.FC = () => {
 
       <FlatList
         data={categories}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         renderItem={({item}) => (
-            <TouchableOpacity
+          <TouchableOpacity
             style={styles.categoryItem}
             onPress={() =>
               navigation.navigate('CategoryScreen', {
-              categoryId: item.id,
-              categoryName: item.name,
+                categoryId: item.id,
+                categoryName: item.name,
               })
             }>
             <Text style={styles.categoryName}>{item.name}</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
             No categories available. Add one!
           </Text>
+        }
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
 
@@ -175,7 +208,6 @@ const HomeScreen: React.FC = () => {
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
 
-      {/* Modal for Adding Earning */}
       <Modal visible={earningModalVisible} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <Formik
@@ -201,6 +233,7 @@ const HomeScreen: React.FC = () => {
                 <TextInput
                   style={styles.modalInput}
                   placeholder="Name"
+                  placeholderTextColor="#999"
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
                   value={values.name}
@@ -212,6 +245,7 @@ const HomeScreen: React.FC = () => {
                 <TextInput
                   style={styles.modalInput}
                   placeholder="Amount"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                   onChangeText={handleChange('generalAmount')}
                   onBlur={handleBlur('generalAmount')}
@@ -221,37 +255,19 @@ const HomeScreen: React.FC = () => {
                   <Text style={styles.errorText}>{errors.generalAmount}</Text>
                 )}
 
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="Start Date"
-                  onChangeText={handleChange('startDate')}
-                  onBlur={handleBlur('startDate')}
-                  value={values.startDate}
-                />
-                {touched.startDate && errors.startDate && (
-                  <Text style={styles.errorText}>{errors.startDate}</Text>
-                )}
-
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="End Date"
-                  onChangeText={handleChange('endDate')}
-                  onBlur={handleBlur('endDate')}
-                  value={values.endDate}
-                />
-                {touched.endDate && errors.endDate && (
-                  <Text style={styles.errorText}>{errors.endDate}</Text>
-                )}
-
-                <Button
-                  title="Add Earning"
-                  onPress={() => handleSubmit()}
-                  disabled={isSubmitting}
-                />
-                <Button
-                  title="Cancel"
-                  onPress={() => setEarningModalVisible(false)}
-                />
+                <View style={styles.modalButtonsContainer}>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity onPress={() => handleSubmit()} disabled={isSubmitting}>
+                      <Text style={styles.modalButtonText}>Add</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      onPress={() => setEarningModalVisible(false)}>
+                      <Text style={styles.modalButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             )}
           </Formik>
@@ -278,6 +294,8 @@ const HomeScreen: React.FC = () => {
               try {
                 const categoryData = {
                   ...values,
+                  startDate: startDate,
+                  endDate: endDate,
                   earningId: selectedEarningId || '',
                 };
                 await createCategoryAndBudget(categoryData);
@@ -301,6 +319,7 @@ const HomeScreen: React.FC = () => {
                 <TextInput
                   style={styles.modalInput}
                   placeholder="Category Name"
+                  placeholderTextColor="#999"
                   onChangeText={handleChange('categoryName')}
                   onBlur={handleBlur('categoryName')}
                   value={values.categoryName}
@@ -312,6 +331,7 @@ const HomeScreen: React.FC = () => {
                 <TextInput
                   style={styles.modalInput}
                   placeholder="Amount"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                   onChangeText={handleChange('amount')}
                   onBlur={handleBlur('amount')}
@@ -321,37 +341,19 @@ const HomeScreen: React.FC = () => {
                   <Text style={styles.errorText}>{errors.amount}</Text>
                 )}
 
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="Start Date"
-                  onChangeText={handleChange('startDate')}
-                  onBlur={handleBlur('startDate')}
-                  value={values.startDate}
-                />
-                {touched.startDate && errors.startDate && (
-                  <Text style={styles.errorText}>{errors.startDate}</Text>
-                )}
-
-                <TextInput
-                  style={styles.modalInput}
-                  placeholder="End Date"
-                  onChangeText={handleChange('endDate')}
-                  onBlur={handleBlur('endDate')}
-                  value={values.endDate}
-                />
-                {touched.endDate && errors.endDate && (
-                  <Text style={styles.errorText}>{errors.endDate}</Text>
-                )}
-
-                <Button
-                  title="Add Category & Budget"
-                  onPress={() => handleSubmit()}
-                  disabled={isSubmitting}
-                />
-                <Button
-                  title="Cancel"
-                  onPress={() => setCategoryModalVisible(false)}
-                />
+                <View style={styles.modalButtonsContainer}>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity onPress={() => handleSubmit()} disabled={isSubmitting}>
+                      <Text style={styles.modalButtonText}>Add</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                      onPress={() => setCategoryModalVisible(false)}>
+                      <Text style={styles.modalButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             )}
           </Formik>

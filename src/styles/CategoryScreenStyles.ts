@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   pieChart: {
-    height: 200,
+    height: 150,
     marginVertical: 16,
   },
   budgetDetails: {
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   income: {
-    backgroundColor: '#E0F7FA',
+    backgroundColor: '#00C49F',
   },
   expense: {
     backgroundColor: '#FFEBEE',
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
@@ -113,7 +113,6 @@ const styles = StyleSheet.create({
   },
   typeSelector: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginVertical: 8,
   },
   typeButton: {
@@ -121,24 +120,40 @@ const styles = StyleSheet.create({
     padding: 12,
     marginHorizontal: 4,
     borderRadius: 4,
-    borderWidth: 1,
     borderColor: '#CCC',
     justifyContent: 'center',
     alignItems: 'center',
   },
   selectedType: {
-    flex: 1,
+    flex: 2,
     padding: 12,
-    marginHorizontal: 4,
+    marginHorizontal: 0,
     borderRadius: 4,
     backgroundColor: '#00C49F',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  modalButtons: {
+    flex: 1,
+    marginHorizontal: 4,
+    borderRadius: 4,
+    backgroundColor: '#FF6F00',
+    padding: 12,
+  },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   typeText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#000',
   },
   loadingContainer: {
     flex: 1,

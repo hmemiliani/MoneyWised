@@ -16,10 +16,8 @@ import styles from '../../styles/CategoryScreenStyles';
 import api from '../../services/api';
 import {RouteProp} from '@react-navigation/native';
 import {StackParamList} from '../../navigation/types';
-import {ScrollView} from 'react-native-gesture-handler';
 
 type CategoryScreenRouteProp = RouteProp<StackParamList, 'CategoryScreen'>;
-
 
 type Budget = {
   id: string;
@@ -133,20 +131,19 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
     );
   }
 
-  const totalSpent = budget?.amountSpent
-    ? parseFloat(
-        typeof budget.amountSpent === 'string'
-          ? budget.amountSpent.replace(/[$,]/g, '')
-          : budget.amountSpent,
-      )
-    : 0;
+  const totalSpent = transactions.reduce((acc, transaction) => {
+    const amount = String(transaction.amount).replace(/[$,]/g, '');
+    const amountValue = parseFloat(amount);
+
+    if (transaction.amount[0] === '-') {
+      return acc - amountValue;
+    } else {
+      return acc + amountValue;
+    }
+  }, 0);
 
   const totalBudget = budget?.amount
-    ? parseFloat(
-        typeof budget.amount === 'string'
-          ? budget.amount.replace(/[$,]/g, '')
-          : budget.amount,
-      )
+    ? parseFloat(budget.amount.replace(/[$,]/g, ''))
     : 0;
 
   const pieData = budget
@@ -164,43 +161,57 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
       ]
     : [];
 
+  const formattedTotalSpent = totalSpent.toLocaleString('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const AvailableBudget = Math.max(totalBudget - totalSpent, 0);
+
+  const formattedAvailableBudget = AvailableBudget.toLocaleString('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{categoryName}</Text>
       <PieChart style={styles.pieChart} data={pieData} />
       <View style={styles.budgetDetails}>
         <Text style={styles.budgetText}>
-          Available Budget: {budget?.amount.toLocaleString() ?? '0'}
+          Available Budget: {formattedAvailableBudget}
         </Text>
         <Text style={styles.spentText}>
-          Total Spent: {budget?.amountSpent.toLocaleString() ?? '0'}
+          Total Spent: ${formattedTotalSpent}
         </Text>
       </View>
 
-      <ScrollView>
-        <FlatList
-          data={transactions}
-          keyExtractor={(item, index) => `${item.description}-${index}`}
-          renderItem={({item}) => {
-            const transactionType = Number(item.amount) < 0 ? '-' : '+';
-            return (
-              <View
-                style={[
-                  styles.transactionItem,
-                  transactionType === '+' ? styles.expense : styles.income,
-                ]}>
-                <Text style={styles.transactionAmount}>{item.amount}</Text>
-                <Text style={styles.transactionDescription}>
-                  {item.description}
-                </Text>
-              </View>
-            );
-          }}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No transactions yet.</Text>
-          }
-        />
-      </ScrollView>
+      <FlatList
+        data={transactions}
+        keyExtractor={(item, index) => `${item.description}-${index}`}
+        renderItem={({item}) => {
+          const transactionType = item.amount[0] === '-' ? '-' : '$';
+
+          return (
+            <View
+              style={[
+                styles.transactionItem,
+                transactionType === '-' ? styles.expense : styles.income,
+              ]}>
+              <Text style={styles.transactionAmount}>{item.amount}</Text>
+              <Text style={styles.transactionDescription}>
+                {item.description}
+              </Text>
+            </View>
+          );
+        }}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No transactions yet.</Text>
+        }
+      />
 
       <TouchableOpacity
         style={styles.addButton}
@@ -229,6 +240,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
                 <TextInput
                   style={styles.modalInput}
                   placeholder="Amount"
+                  placeholderTextColor="#999"
                   keyboardType="numeric"
                   onChangeText={handleChange('amount')}
                   onBlur={handleBlur('amount')}
@@ -241,6 +253,7 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
                 <TextInput
                   style={styles.modalInput}
                   placeholder="Description"
+                  placeholderTextColor="#999"
                   onChangeText={handleChange('description')}
                   onBlur={handleBlur('description')}
                   value={values.description}
@@ -269,9 +282,18 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({route}) => {
                     <Text style={styles.typeText}>Income</Text>
                   </TouchableOpacity>
                 </View>
-
-                <Button title="Add" onPress={() => handleSubmit()} />
-                <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                <View style={styles.modalButtonsContainer}>
+                  <View style={styles.modalButtons}>
+                  <TouchableOpacity onPress={() => handleSubmit()} style={styles.modalButton}>
+                    <Text style={styles.modalButtonText}>Add</Text>
+                  </TouchableOpacity>
+                  </View>
+                  <View style={styles.modalButtons}>
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.modalButton}>
+                    <Text style={styles.modalButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             )}
           </Formik>
