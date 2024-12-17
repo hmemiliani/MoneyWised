@@ -59,7 +59,7 @@ export const forgotPassword = async (email: string) => {
   return response.data;
 };
 
-// Validate Recovery Code
+
 export const validateRecoveryCode = async (data: { email: string; token: string }) => {
   const response = await api.post('/auth/validate-recovery-code', data, {
     headers: {
@@ -69,7 +69,7 @@ export const validateRecoveryCode = async (data: { email: string; token: string 
   return response.data;
 };
 
-// Reset Password
+
 export const resetPassword = async (data: { email: string; token: string; newPassword: string }) => {
   const response = await api.post('/auth/reset-password', data, {
     headers: {

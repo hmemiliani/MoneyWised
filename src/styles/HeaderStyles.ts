@@ -15,6 +15,6 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   placeholder: {
-    width: 24, // Simula el tamaño del ícono para balancear el diseño
+    width: 24,
   },
 });
