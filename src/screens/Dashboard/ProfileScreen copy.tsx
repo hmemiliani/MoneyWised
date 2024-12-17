@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,16 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {useProfile} from '../../hooks/useProfile';
-import {useAuth} from '../../hooks/useAuth';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { useProfile } from '../../hooks/useProfile';
+import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import styles from '../../styles/ProfileScreenStyles';
 
 const ProfileScreen: React.FC = () => {
-  const {logout} = useAuth();
-  const {profile, loading, updateProfile} = useProfile();
+  const { logout } = useAuth();
+  const { profile, loading, updateProfile } = useProfile();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -30,10 +30,7 @@ const ProfileScreen: React.FC = () => {
     try {
       await updateProfile(formValues);
       setIsEditing(false);
-      Alert.alert(
-        'Profile updated',
-        'Your information was updated successfully.',
-      );
+      Alert.alert('Profile updated', 'Your information was updated successfully.');
     } catch (error) {
       Alert.alert('Error', 'Could not update your profile.');
     }
@@ -57,15 +54,7 @@ const ProfileScreen: React.FC = () => {
 
     if (result.assets && result.assets.length > 0) {
       const image = result.assets[0];
-      console.log(image);
-      setFormValues({
-        ...formValues,
-        profilePicture: {
-          uri: image.uri,
-          name: image.fileName || 'profile.jpg',
-          type: image.type || 'image/jpeg',
-        },
-      });
+      setFormValues({ ...formValues, profilePicture: image });
     }
   };
 
@@ -83,17 +72,12 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.profileContainer}>
         <Image
           source={{
-            uri:
-              formValues.profilePicture?.uri ||
-              profile?.profilePicture ||
-              'https://via.placeholder.com/100',
+            uri: formValues.profilePicture?.uri || profile?.profileImage || 'https://via.placeholder.com/100',
           }}
           style={styles.profileImage}
         />
         {isEditing && (
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={handleImagePick}>
+          <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
             <Text style={styles.uploadText}>Change Photo</Text>
           </TouchableOpacity>
         )}
@@ -108,17 +92,17 @@ const ProfileScreen: React.FC = () => {
             <Input
               placeholder="Name"
               value={formValues.name}
-              onChangeText={text => setFormValues({...formValues, name: text})}
+              onChangeText={(text) => setFormValues({ ...formValues, name: text })}
             />
             <Input
               placeholder="Email"
               value={formValues.email}
-              onChangeText={text => setFormValues({...formValues, email: text})}
+              onChangeText={(text) => setFormValues({ ...formValues, email: text })}
             />
             <Input
               placeholder="Phone"
               value={formValues.phone}
-              onChangeText={text => setFormValues({...formValues, phone: text})}
+              onChangeText={(text) => setFormValues({ ...formValues, phone: text })}
             />
           </View>
         )}

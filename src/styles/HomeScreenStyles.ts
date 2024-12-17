@@ -7,7 +7,6 @@ export default StyleSheet.create({
     backgroundColor: colors.gray.light,
     padding: 20,
   },
-  // Botón de Presupuesto Disponible (Earnings)
   earningButton: {
     backgroundColor: colors.primary,
     borderRadius: 10,
@@ -50,7 +49,6 @@ export default StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  // Lista de Categorías
   categoryItem: {
     backgroundColor: colors.white,
     borderRadius: 8,
@@ -61,7 +59,7 @@ export default StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   categoryName: {
@@ -75,7 +73,6 @@ export default StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
   },
-  // Botón flotante para agregar Categorías y Budgets
   addButton: {
     position: 'absolute',
     bottom: 20,
@@ -96,7 +93,6 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: colors.white,
   },
-  // Modal general
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -131,16 +127,24 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.gray.medium,
   },
-  modalButtonContainer: {
+  modalButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 20,
+    marginTop: 16,
   },
-  modalButton: {
+  modalButtons: {
     flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 4,
+    borderRadius: 4,
+    backgroundColor: '#FF6F00',
+    padding: 12,
   },
+  modalButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalButton: {},
   errorText: {
     fontSize: 14,
     color: 'red',
