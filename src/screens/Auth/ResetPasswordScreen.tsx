@@ -14,9 +14,8 @@ type Props = NativeStackScreenProps<StackParamList, 'ResetPassword'>;
 const ResetPasswordScreen: React.FC<Props> = ({ navigation, route }) => {
   const { email, token } = route.params;
   const { resetPassword } = useAuth();
-  const [loading, setLoading] = useState(false); // Estado de loading
+  const [loading, setLoading] = useState(false);
 
-  // Validación de formulario con Yup
   const validationSchema = Yup.object().shape({
     newPassword: Yup.string()
       .min(8, 'Password must be at least 8 characters')
@@ -26,7 +25,6 @@ const ResetPasswordScreen: React.FC<Props> = ({ navigation, route }) => {
       .required('Confirmation is required'),
   });
 
-  // Función para manejar el reseteo de contraseña
   const handleResetPassword = async (values: { newPassword: string }) => {
     setLoading(true);
     try {

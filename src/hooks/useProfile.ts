@@ -29,7 +29,7 @@ export const useProfile = () => {
       if (data.email) formData.append('email', data.email);
       if (data.phone) formData.append('phone', data.phone);
       if (data.profilePicture) {
-        formData.append('file', { // El campo correcto es 'file'
+        formData.append('file', {
           uri: data.profilePicture.uri,
           name: 'profile.jpg',
           type: data.profilePicture.type || 'image/jpeg',
