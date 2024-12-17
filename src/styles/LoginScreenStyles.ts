@@ -15,4 +15,13 @@ export default StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  linkButton: {
+    marginTop: 10,
+    alignSelf: 'center',
+  },
+  linkButtonText: {
+    color: colors.info,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
 });

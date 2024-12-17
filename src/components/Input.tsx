@@ -5,10 +5,12 @@ import styles from '../styles/InputStyles';
 interface InputProps {
   placeholder: string;
   value: string;
+  style?: object;
   onChangeText: (text: string) => void;
-  onBlur?: () => void;
+  onBlur?: (field: string) => void;
   secureTextEntry?: boolean;
   error?: string;
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
 }
 
 const Input: React.FC<InputProps> = ({
@@ -26,7 +28,7 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        onBlur={onBlur}
+        onBlur={() => onBlur && onBlur(placeholder)}
         secureTextEntry={secureTextEntry}
         placeholderTextColor="#9E9E9E"
       />
